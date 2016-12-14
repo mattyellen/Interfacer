@@ -1,52 +1,47 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using ImpromptuInterface;
-using ImpromptuInterface.InvokeExt;
+using System.Reflection;
+using Interfacer.Generators;
 
 namespace Interfacer
 {
     public static class InterfacerFactory
     {
+        private static AdapterGenerator _adapterGenerator;
+
+        public static void Initialize(Assembly assembly)
+        {
+            if (_adapterGenerator == null)
+            {
+                _adapterGenerator = new AdapterGenerator();
+            }
+
+            foreach (var @interface in assembly.GetTypes().Where(t => t.IsInterface))
+            {
+                var attribute = GetInterfacerAttribute(@interface);
+                if (attribute != null)
+                {
+                    _adapterGenerator.AddAdapterClass(@interface, attribute);
+                }
+            }
+
+            _adapterGenerator.Generate();
+        }
+
         public static TInterface Create<TInterface>() where TInterface : class
         {
             VerifyInterfaceType(typeof(TInterface));
 
             var attribute = GetInterfacerAttribute(typeof(TInterface));
-            var createMethod = new Dictionary<WrappedObjectType, Func<Type, object>>
+
+            if (attribute.Type != WrappedObjectType.Instance)
             {
-                {WrappedObjectType.Factory, CreateFactory },
-                {WrappedObjectType.Static, CreateStaticWrapper },
-                {WrappedObjectType.Instance, CreateInstance }
-            };
+                return _adapterGenerator.CreateAdapterObject<TInterface>();
+            }
 
-            return createMethod[attribute.Type](attribute.Class).ActLike<TInterface>();
-        }
-
-        public static void Validate<TInterface>()
-        {
-            Validate(typeof(TInterface));
-        }
-
-        public static void Validate(Type interfaceType)
-        {
-            
-        }
-
-        private static object CreateInstance(Type @class)
-        {
-            return Activator.CreateInstance(@class);
-        }
-
-        private static object CreateStaticWrapper(Type @class)
-        {
-            return new StaticWrapper(@class);
-        }
-
-        private static object CreateFactory(Type @class)
-        {
-            return new FactoryWrapper(@class);
+            var wrappedObject = Activator.CreateInstance(attribute.Class);
+            return _adapterGenerator.CreateAdapterObject<TInterface>(wrappedObject);
         }
 
         private static void VerifyInterfaceType(Type type)
@@ -58,7 +53,7 @@ namespace Interfacer
 
             if (GetInterfacerAttribute(type) == null)
             {
-                throw new InvalidOperationException("InterfacerFactory.Create<> can only be used with an interface on which the InterfacerFactory attribute is applied.");
+                throw new InvalidOperationException("InterfacerFactory.Create<> can only be used with an interface on which the Interfacer attribute is applied.");
             }
         }
 

@@ -1,16 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using ImpromptuInterface;
-using ImpromptuInterface.InvokeExt;
 using Interfacer;
 using NUnit.Framework;
 
 namespace Test
 {
-    [Interfacer(WrappedObjectType.Static, typeof(TestObject))]
+    //[Interfacer(WrappedObjectType.Static, typeof(TestObject))]
     public interface ITestStaticInterface
     {
         int StaticGetValue();
@@ -24,13 +18,14 @@ namespace Test
     {
         int Value { get; set; }
         int GetValue();
-        T GetObject<T>() where T : new();
-        void GetValueOut(out int val);
-        event EventHandler<EventArgs> Event;
-        void FireEvent();
+        int GetValue(int num);
+        //T GetObject<T>() where T : new();
+        //void GetValueOut(out int val);
+        //event EventHandler<EventArgs> Event;
+        //void FireEvent();
     }
 
-    [Interfacer(WrappedObjectType.Factory, typeof(TestObject))]
+    //[Interfacer(WrappedObjectType.Factory, typeof(TestObject))]
     public interface ITestFactoryInterface
     {
         ITestInterface Create();
@@ -54,6 +49,11 @@ namespace Test
         public int GetValue()
         {
             return Value;
+        }
+
+        public int GetValue(int num)
+        {
+            return Value + num;
         }
 
         public void GetValueOut(out int val)
@@ -96,8 +96,14 @@ namespace Test
     }
 
     [TestFixture]
-    public class InterfacerFactoryFixture
+    public class InterfacerFixture
     {
+        [OneTimeSetUp]
+        public void OneTimeSetup()
+        {
+            InterfacerFactory.Initialize(GetType().Assembly);
+        }
+
         [Test]
         public void ShouldCreateWrappedInstance()
         {
@@ -143,14 +149,14 @@ namespace Test
                 obj.Value = testValue.Value;
             }
 
-            Assert.That(((IActLikeProxy)obj).Original, Is.TypeOf<TestObject>());
             Assert.That(obj.Value, Is.EqualTo(testValue));
             Assert.That(obj.GetValue(), Is.EqualTo(testValue));
-            Assert.That(obj.GetObject<TestObject>(), Is.InstanceOf<TestObject>());
+            Assert.That(obj.GetValue(2), Is.EqualTo(testValue + 2));
+            //Assert.That(obj.GetObject<TestObject>(), Is.InstanceOf<TestObject>());
 
-            int outVal;
-            obj.GetValueOut(out outVal);
-            Assert.That(outVal, Is.EqualTo(testValue));
+            //int outVal;
+            //obj.GetValueOut(out outVal);
+            //Assert.That(outVal, Is.EqualTo(testValue));
         }
     }
 }
