@@ -52,19 +52,31 @@ namespace Interfacer.Generators
 
         protected override void AddMethodBody(CodeMemberMethod adapterMethod, MethodInfo method)
         {
-            var returnStatement =
-                new CodeMethodReturnStatement();
-
-            var args = from a in method.GetParameters()
+            
+            var args = 
+                from a in method.GetParameters()
                 select new CodeArgumentReferenceExpression(a.Name);
 
-            returnStatement.Expression =
-                new CodeMethodInvokeExpression(
-                _thisWrappedObjectRef,
-                adapterMethod.Name,
+            var genericArgs = 
+                from a in method.GetGenericArguments()
+                select new CodeTypeReference(a);
+
+            var invokeExpression = new CodeMethodInvokeExpression(
+                new CodeMethodReferenceExpression(
+                    _thisWrappedObjectRef,
+                    adapterMethod.Name,
+                    genericArgs.ToArray()
+                ),
                 args.Cast<CodeExpression>().ToArray());
 
-            adapterMethod.Statements.Add(returnStatement);
+            if (method.ReturnType == typeof(void))
+            {
+                adapterMethod.Statements.Add(invokeExpression);
+            }
+            else
+            {
+                adapterMethod.Statements.Add(new CodeMethodReturnStatement(invokeExpression));
+            }
         }
     }
 }

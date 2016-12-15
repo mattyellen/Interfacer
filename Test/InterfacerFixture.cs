@@ -14,12 +14,13 @@ namespace Test
     }
 
     [Interfacer(WrappedObjectType.Instance, typeof(TestObject))]
-    public interface ITestInterface
+    public interface ITestInterface 
     {
         int Value { get; set; }
+        void DoIt();
         int GetValue();
         int GetValue(int num);
-        //T GetObject<T>() where T : new();
+        T GetObject<T>() where T : ITag, new();
         //void GetValueOut(out int val);
         //event EventHandler<EventArgs> Event;
         //void FireEvent();
@@ -32,7 +33,8 @@ namespace Test
         ITestInterface Create(int value);
     }
 
-    public class TestObject
+    public interface ITag { }
+    public class TestObject : ITag
     {
         public TestObject()
         {
@@ -46,6 +48,12 @@ namespace Test
         public event EventHandler<EventArgs> Event;
 
         public int Value { get; set; }
+
+        public void DoIt()
+        {
+            
+        }
+
         public int GetValue()
         {
             return Value;
@@ -61,7 +69,7 @@ namespace Test
             val = Value;
         }
 
-        public T GetObject<T>() where T : new()
+        public T GetObject<T>() where T : ITag, new()
         {
             return new T();
         }

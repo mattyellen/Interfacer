@@ -1,5 +1,6 @@
 ﻿using System;
 using System.CodeDom;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
@@ -57,13 +58,28 @@ namespace Interfacer.Generators
                 {
                     Attributes = MemberAttributes.Public | MemberAttributes.Final,
                     Name = method.Name,
-                    ReturnType = new CodeTypeReference(method.ReturnType.FullName),
+                    ReturnType = new CodeTypeReference(method.ReturnType.FullName ?? method.ReturnType.Name)
                 };
 
                 if (method.IsGenericMethod)
                 {
-                    adapterMethod.TypeParameters.AddRange((from t in method.GetGenericArguments()
-                                                           select new CodeTypeParameter(t.FullName)).ToArray());
+                    var genericTypes = new List<CodeTypeParameter>();
+                    foreach (var t in method.GetGenericArguments())
+                    {
+                        var typeParam = new CodeTypeParameter(t.Name);
+                        foreach (var c in t.GetGenericParameterConstraints())
+                        {
+                            typeParam.Constraints.Add(new CodeTypeReference(c));
+                        }
+
+                        if (t.GenericParameterAttributes.HasFlag(GenericParameterAttributes.DefaultConstructorConstraint))
+                        {
+                            typeParam.HasConstructorConstraint = true;
+                        }
+                        genericTypes.Add(typeParam);
+                    }
+
+                    adapterMethod.TypeParameters.AddRange(genericTypes.ToArray());
                 }
 
                 adapterMethod.Parameters.AddRange(
