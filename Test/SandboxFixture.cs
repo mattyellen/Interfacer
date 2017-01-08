@@ -14,12 +14,6 @@ namespace Test
             ProcessStartInfo StartInfo { get; }
         }
 
-        [OneTimeSetUp]
-        public void OneTimeSetup()
-        {
-            InterfacerFactory.Initialize(GetType().Assembly);
-        }
-
         [Test]
         public void Test()
         {
