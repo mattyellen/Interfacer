@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using Castle.DynamicProxy;
+using Interfacer.Exceptions;
 
 namespace Interfacer.Proxies
 {
@@ -22,14 +23,29 @@ namespace Interfacer.Proxies
 
             var targetMethod = (from m in _wrappedObject.GetType().GetMethods()
                 where MethodMatchesSignature(m, invocation)
-                select m).Single();
+                select m).SingleOrDefault();
+
+            if (targetMethod == null)
+            {
+                throw new MethodNotFoundException($"Failed to find a method on object of type {_wrappedObject.GetType()} with signature {invocation.Method}");
+            }
 
             if (isGenericMethod)
             {
                 targetMethod = targetMethod.MakeGenericMethod(invocation.GenericArguments);
             }
 
-            invocation.ReturnValue = targetMethod.Invoke(_wrappedObject, invocation.Arguments);
+            var result = targetMethod.Invoke(_wrappedObject, invocation.Arguments);
+
+            var attribute = InterfacerFactory.GetInterfacerAttribute(invocation.Method.ReturnType);
+            if (attribute != null &&
+                attribute.Type == WrappedObjectType.Instance &&
+                attribute.Class.IsAssignableFrom(targetMethod.ReturnType))
+            {
+                result = new ProxyGenerator().CreateInterfaceProxyWithoutTarget(invocation.Method.ReturnType, new InstanceProxy(result));
+            }
+
+            invocation.ReturnValue = result;
         }
 
         private bool MethodMatchesSignature(MethodInfo methodInfo, IInvocation invocation)

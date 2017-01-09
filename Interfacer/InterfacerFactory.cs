@@ -32,7 +32,7 @@ namespace Interfacer
         }
 
 
-        private static InterfacerAttribute GetInterfacerAttribute(Type type)
+        internal static InterfacerAttribute GetInterfacerAttribute(Type type)
         {
             return (InterfacerAttribute) type.GetCustomAttributes(true).FirstOrDefault(a => a is InterfacerAttribute);
         }
