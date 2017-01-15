@@ -14,8 +14,11 @@ namespace Interfacer
             var attribute = GetInterfacerAttribute(typeof(TInterface));
 
             var wrappedObject = Activator.CreateInstance(attribute.Class);
-            var proxyGenerator = new ProxyGenerator();
-            return proxyGenerator.CreateInterfaceProxyWithoutTarget<TInterface>(new InstanceProxy(wrappedObject));
+            return (TInterface) ValueConverter
+                .For(attribute.Class, wrappedObject)
+                .To(typeof(TInterface))
+                .Convert()
+                .Value;
         }
 
         private static void VerifyInterfaceType(Type type)

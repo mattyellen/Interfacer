@@ -1,10 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using Castle.DynamicProxy;
 using Interfacer.Exceptions;
+using Interfacer.Utility;
 
 namespace Interfacer.Proxies
 {
@@ -19,66 +20,107 @@ namespace Interfacer.Proxies
 
         public void Intercept(IInvocation invocation)
         {
-            var isGenericMethod = invocation.GenericArguments != null;
+            if (invocation.Method.Name == "get_" + nameof(ICanGetWrappedObject.__InterfacerWrappedObject__))
+            {
+                invocation.ReturnValue = _wrappedObject;
+                return;
+            }
 
-            var targetMethod = (from m in _wrappedObject.GetType().GetMethods()
-                where MethodMatchesSignature(m, invocation)
-                select m).SingleOrDefault();
+            var matchingTarget = (from m in _wrappedObject.GetType().GetMethods()
+                                  let info = GetMatchingSignatureInfo(m, invocation)
+                                  where info.SignaturesMatch
+                                  select info).SingleOrDefault();
 
-            if (targetMethod == null)
+            if (matchingTarget == null)
             {
                 throw new MethodNotFoundException($"Failed to find a method on object of type {_wrappedObject.GetType()} with signature {invocation.Method}");
             }
 
-            if (isGenericMethod)
+            var parameterConverters = matchingTarget.ParameterConverters.Select(c => c.Convert()).ToArray();
+            var convertedArgs = parameterConverters.Select(a => a.Value).ToArray();
+
+            matchingTarget.ReturnValueConverter.Value = matchingTarget.Method.Invoke(_wrappedObject, convertedArgs);
+            invocation.ReturnValue = matchingTarget.ReturnValueConverter.Convert().Value;
+
+            for (var i = 0; i < convertedArgs.Length; i++)
             {
-                targetMethod = targetMethod.MakeGenericMethod(invocation.GenericArguments);
+                parameterConverters[i].Value = convertedArgs[i];
+                invocation.Arguments[i] = parameterConverters[i].ConvertBack().Value;                
             }
-
-            var result = targetMethod.Invoke(_wrappedObject, invocation.Arguments);
-
-            var attribute = InterfacerFactory.GetInterfacerAttribute(invocation.Method.ReturnType);
-            if (attribute != null &&
-                attribute.Type == WrappedObjectType.Instance &&
-                attribute.Class.IsAssignableFrom(targetMethod.ReturnType))
-            {
-                result = new ProxyGenerator().CreateInterfaceProxyWithoutTarget(invocation.Method.ReturnType, new InstanceProxy(result));
-            }
-
-            invocation.ReturnValue = result;
         }
 
-        private bool MethodMatchesSignature(MethodInfo methodInfo, IInvocation invocation)
+        private MethodSignatureInfo GetMatchingSignatureInfo(MethodInfo checkTargetMethod, IInvocation invocation)
         {
-            var targetMethodInfo = invocation.Method;
+            var invokedMethod = invocation.Method;
 
-            if (methodInfo.IsPublic && !methodInfo.IsStatic &&
-                methodInfo.Name == targetMethodInfo.Name &&
-                methodInfo.IsGenericMethod == targetMethodInfo.IsGenericMethod)
+            if (!checkTargetMethod.IsPublic ||
+                checkTargetMethod.IsStatic ||
+                checkTargetMethod.Name != invokedMethod.Name ||
+                checkTargetMethod.IsGenericMethod != invokedMethod.IsGenericMethod)
             {
-                if (invocation.GenericArguments != null &&
-                    methodInfo.IsGenericMethod)
+                return MethodSignatureInfo.NoMatch();
+            }
+
+            if (invocation.GenericArguments != null &&
+                checkTargetMethod.IsGenericMethod)
+            {
+                if (checkTargetMethod.GetGenericArguments().Length == invocation.GenericArguments.Length)
                 {
-                    if (methodInfo.GetGenericArguments().Length == invocation.GenericArguments.Length)
-                    {
-                        methodInfo = methodInfo.MakeGenericMethod(invocation.GenericArguments);
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                    checkTargetMethod = checkTargetMethod.MakeGenericMethod(invocation.GenericArguments);
                 }
-
-                var sourceParamTypes = methodInfo.GetParameters().Select(p => p.ParameterType);
-                var targetParamTypes = targetMethodInfo.GetParameters().Select(p => p.ParameterType);
-
-                if (sourceParamTypes.SequenceEqual(targetParamTypes))
+                else
                 {
-                    return true;
+                    return MethodSignatureInfo.NoMatch();
                 }
             }
 
-            return false;
+            var sourceParamTypes = invokedMethod.GetParameters().Select(p => p.ParameterType).ToArray();
+            var targetParamTypes = checkTargetMethod.GetParameters().Select(p => p.ParameterType).ToArray();
+
+            if (sourceParamTypes.Length != targetParamTypes.Length)
+            {
+                return MethodSignatureInfo.NoMatch();
+            }
+
+            var signatureInfo = new MethodSignatureInfo()
+            {
+                ParameterConverters = new List<ValueConverter.IConvertableState>()
+            };
+
+            var argCount = sourceParamTypes.Length;
+            for (var i = 0; i < argCount; i++)
+            {
+                signatureInfo.ParameterConverters.Add(
+                    ValueConverter.For(sourceParamTypes[i], invocation.Arguments[i])
+                                  .To(targetParamTypes[i]));
+            }
+
+            signatureInfo.Method = checkTargetMethod;
+
+            signatureInfo.ReturnValueConverter =
+                ValueConverter.For(checkTargetMethod.ReturnType).To(invokedMethod.ReturnType);
+
+            signatureInfo.SignaturesMatch = 
+                signatureInfo.ParameterConverters.All(c => c.CanConvert()) &&
+                signatureInfo.ReturnValueConverter.CanConvert();
+
+            return signatureInfo;
+        }
+
+        private class MethodSignatureInfo
+        {
+            public MethodInfo Method { get; set; }
+            public bool SignaturesMatch { get; set; }
+            public IList<ValueConverter.IConvertableState> ParameterConverters { get; set; }
+            public ValueConverter.IConvertableState ReturnValueConverter { get; set; }
+
+            public static MethodSignatureInfo NoMatch()
+            {
+                return new MethodSignatureInfo()
+                {
+                    SignaturesMatch = false
+                };
+            }
         }
     }
 }

@@ -47,7 +47,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="InterfacerFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SandboxFixture.cs" />
     <Compile Include="TestObject.cs" />

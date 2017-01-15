@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Interfacer;
+using Interfacer.Proxies;
 using NUnit.Framework;
 
 namespace Test
@@ -12,16 +14,21 @@ namespace Test
         void DoIt();
         int GetValue();
         int GetValue(int num);
+        int AddValueFromObject(ITestInterface obj);
         T GetObject<T>() where T : new();
         Tuple<T, T2> GetObject<T, T2>()
             where T : new()
             where T2 : new();
-        ITestInterface GetNewObject();
+        ITestInterface GetNewObject(bool returnNull = false);
         void GetValueOut(out int val);
+        void GetValueRef(ref int val);
+        void GetObjectOut(out ITestInterface val);
         T GetFirst<T>(IEnumerable<T> values);
         event EventHandler<EventArgs> Event;
         void FireEvent();
         T NoSuchMethod<T>();
+        int AddValuesFromArray(int[] vals);
+        void GetTripleValue(out int[] vals);
     }
 
     [TestFixture]
@@ -91,6 +98,40 @@ namespace Test
         }
 
         [Test]
+        public void ShouldSupportMethodWithArrayParameter()
+        {
+            int[] vals = {123,456,789};
+            int result = CreateObject().AddValuesFromArray(vals);
+            Assert.That(result, Is.EqualTo(vals.Sum()));
+        }
+
+        [Test]
+        public void ShouldSupportMethodWithOutArrayParameter()
+        {
+            int[] vals;
+            CreateObject().GetTripleValue(out vals);
+            Assert.That(vals, Is.EquivalentTo(new[] {_testValue, _testValue, _testValue}));
+        }
+
+        [Test]
+        public void ShouldSupportMethodWithRefParameter()
+        {
+            var localTestValue = 123;
+            var refVal = localTestValue;
+            CreateObject().GetValueRef(ref refVal);
+            Assert.That(refVal, Is.EqualTo(_testValue + localTestValue));
+        }
+
+        [Test]
+        public void ShouldSupportMethodWithWrappedOutParamter()
+        {
+            ITestInterface outObject;
+            CreateObject().GetObjectOut(out outObject);
+
+            Assert.That(outObject.Value, Is.EqualTo(_testValue));
+        }
+
+        [Test]
         public void ShouldSupportEvents()
         {
             var firedEvent = false;
@@ -113,11 +154,28 @@ namespace Test
         }
 
         [Test]
-        public void ShouldReturnNewWrappedObject()
+        public void ShouldReturnNewInterfacerWrappedObject()
         {
             var obj = CreateObject().GetNewObject();
 
             Assert.That(obj.DoIt, Throws.Nothing);
+        }
+
+        [Test]
+        public void ShouldNotReturnInterfacerWrappedObjectIfOriginalMethodReturnsNull()
+        {
+            var obj = CreateObject().GetNewObject(true);
+
+            Assert.That(obj, Is.Null);
+        }
+
+        [Test]
+        public void ShouldHandleInterfacerWrappedArguments()
+        {
+            var obj = CreateObject();
+            var result = CreateObject().AddValueFromObject(obj);
+
+            Assert.That(result, Is.EqualTo(_testValue * 2));
         }
 
         private ITestInterface CreateObject()

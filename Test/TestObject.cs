@@ -33,9 +33,24 @@ namespace Test
             return Value + num;
         }
 
+        public int AddValueFromObject(TestObject obj)
+        {
+            return Value + obj.GetValue();
+        }
+
         public void GetValueOut(out int val)
         {
             val = Value;
+        }
+
+        public void GetValueRef(ref int val)
+        {
+            val = val + Value;
+        }
+
+        public void GetObjectOut(out TestObject val)
+        {
+            val = new TestObject(Value);
         }
 
         public T GetFirst<T>(IEnumerable<T> values)
@@ -55,37 +70,24 @@ namespace Test
             return Tuple.Create(new T(), new T2());
         }
 
-        public TestObject GetNewObject()
+        public TestObject GetNewObject(bool returnNull = false)
         {
-            return new TestObject();
+            return returnNull ? null : new TestObject();
+        }
+
+        public int AddValuesFromArray(int[] vals)
+        {
+            return vals.Sum();
+        }
+
+        public void GetTripleValue(out int[] vals)
+        {
+            vals = new[] {Value, Value, Value};
         }
 
         public void FireEvent()
         {
             Event?.Invoke(this, EventArgs.Empty);
-        }
-
-        public static event EventHandler<EventArgs> StaticEvent;
-
-        public static readonly int StaticValue = 123;
-        public static int StaticGetValue()
-        {
-            return StaticValue;
-        }
-
-        public static T StaticGetObject<T>() where T : new()
-        {
-            return new T();
-        }
-
-        public static void StaticGetValueOut(out int val)
-        {
-            val = StaticValue;
-        }
-
-        public static void FireStaticEvent()
-        {
-            StaticEvent?.Invoke(null, EventArgs.Empty);
         }
     }
 }
