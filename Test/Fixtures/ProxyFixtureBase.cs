@@ -137,7 +137,14 @@ namespace Test.Fixtures
             obj.Event += (s, e) =>
             {
                 firedEvent = true;
-                Assert.That(s, Is.InstanceOf<TestObject>());
+                if (this is StaticFixture)
+                {
+                    Assert.That(s, Is.Null);
+                }
+                else if (this is InstanceFixture)
+                {
+                    Assert.That(s, Is.InstanceOf<TestObject>());
+                }
                 Assert.That(e, Is.TypeOf<EventArgs>());
             };
 
