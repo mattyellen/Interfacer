@@ -2,27 +2,26 @@
 using System.Collections.Generic;
 using System.Linq;
 using Interfacer;
-using Interfacer.Proxies;
 using NUnit.Framework;
+using Test.TestClasses;
 
-namespace Test
+namespace Test.Fixtures
 {
-    [Interfacer(WrappedObjectType.Instance, typeof(TestObject))]
     public interface ITestInterface
     {
         int Value { get; set; }
         void DoIt();
         int GetValue();
         int GetValue(int num);
-        int AddValueFromObject(ITestInterface obj);
+        int AddValueFromObject(ITestInstanceInterface obj);
         T GetObject<T>() where T : new();
         Tuple<T, T2> GetObject<T, T2>()
             where T : new()
             where T2 : new();
-        ITestInterface GetNewObject(bool returnNull = false);
+        ITestInstanceInterface GetNewObject(bool returnNull = false);
         void GetValueOut(out int val);
         void GetValueRef(ref int val);
-        void GetObjectOut(out ITestInterface val);
+        void GetObjectOut(out ITestInstanceInterface val);
         T GetFirst<T>(IEnumerable<T> values);
         event EventHandler<EventArgs> Event;
         void FireEvent();
@@ -31,8 +30,7 @@ namespace Test
         void GetTripleValue(out int[] vals);
     }
 
-    [TestFixture]
-    public class WrappedInstanceFixture
+    public class ProxyFixtureBase<TInterfaceType> where TInterfaceType : class, ITestInterface
     {
         private int _testValue = 999;
 
@@ -125,7 +123,7 @@ namespace Test
         [Test]
         public void ShouldSupportMethodWithWrappedOutParamter()
         {
-            ITestInterface outObject;
+            ITestInstanceInterface outObject;
             CreateObject().GetObjectOut(out outObject);
 
             Assert.That(outObject.Value, Is.EqualTo(_testValue));
@@ -172,15 +170,20 @@ namespace Test
         [Test]
         public void ShouldHandleInterfacerWrappedArguments()
         {
-            var obj = CreateObject();
+            var obj = CreateObjectForInterface<ITestInstanceInterface>();
             var result = CreateObject().AddValueFromObject(obj);
 
             Assert.That(result, Is.EqualTo(_testValue * 2));
         }
 
-        private ITestInterface CreateObject()
+        private TInterfaceType CreateObject()
         {
-            var obj = InterfacerFactory.Create<ITestInterface>();
+            return CreateObjectForInterface<TInterfaceType>();
+        }
+
+        private T CreateObjectForInterface<T>() where T : class, ITestInterface
+        {
+            var obj = InterfacerFactory.Create<T>();
             obj.Value = _testValue;
             return obj;
         }

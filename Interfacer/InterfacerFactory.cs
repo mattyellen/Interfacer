@@ -13,12 +13,23 @@ namespace Interfacer
 
             var attribute = GetInterfacerAttribute(typeof(TInterface));
 
-            var wrappedObject = Activator.CreateInstance(attribute.Class);
-            return (TInterface) ValueConverter
-                .For(attribute.Class, wrappedObject)
-                .To(typeof(TInterface))
-                .Convert()
-                .Value;
+            if (attribute.Type == WrappedObjectType.Instance)
+            {
+                var wrappedObject = Activator.CreateInstance(attribute.Class);
+                return (TInterface) ValueConverter
+                    .For(attribute.Class, wrappedObject)
+                    .To(typeof(TInterface))
+                    .Convert()
+                    .Value;
+            }
+
+            if (attribute.Type == WrappedObjectType.Static)
+            {
+                var proxyGenerator = new ProxyGenerator();
+                return proxyGenerator.CreateInterfaceProxyWithoutTarget<TInterface>(new StaticProxy(attribute.Class));
+            }
+
+            throw new NotImplementedException();
         }
 
         private static void VerifyInterfaceType(Type type)

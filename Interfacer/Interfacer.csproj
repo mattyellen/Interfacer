@@ -45,6 +45,8 @@
   <ItemGroup>
     <Compile Include="Exceptions\InvalidTypeException.cs" />
     <Compile Include="Proxies\ICanGetWrappedObject.cs" />
+    <Compile Include="Proxies\InstanceProxy.cs" />
+    <Compile Include="Proxies\StaticProxy.cs" />
     <Compile Include="Proxies\ValueConverter.cs" />
     <Compile Include="Utility\EnumerableExtensions.cs" />
     <Compile Include="Utility\EnumExtensions.cs" />
@@ -52,7 +54,7 @@
     <Compile Include="InterfacerFactory.cs" />
     <Compile Include="Exceptions\MethodNotFoundException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Proxies\InstanceProxy.cs" />
+    <Compile Include="Proxies\ProxyBase.cs" />
     <Compile Include="Utility\TypeExtensions.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -47,10 +47,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Fixtures\InstanceFixture.cs" />
+    <Compile Include="Fixtures\StaticFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SandboxFixture.cs" />
-    <Compile Include="TestObject.cs" />
-    <Compile Include="WrappedInstanceFixture.cs" />
+    <Compile Include="TestClasses\TestObject.cs" />
+    <Compile Include="TestClasses\TestStaticClass.cs" />
+    <Compile Include="Fixtures\ProxyFixtureBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Interfacer\Interfacer.csproj">
@@ -61,6 +64,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
