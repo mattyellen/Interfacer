@@ -10,18 +10,19 @@ using Interfacer.Utility;
 
 namespace Interfacer.Proxies
 {
-    public abstract class ProxyBase
+    internal abstract class ProxyBase
     {
         protected abstract object WrappedObject { get; }
         protected abstract Type WrappedType { get; }
         protected abstract bool IsMethodTypeStatic { get; }
+        protected abstract IEnumerable<MethodSignatureInfo> GetMatchingSignatureInfo(
+            IInvocation invocation);
 
         protected void InterceptBase(IInvocation invocation)
         {
-            var matchingTarget = (from m in WrappedType.GetMethods()
-                                  let info = GetMatchingSignatureInfo(m, invocation)
-                                  where info.SignaturesMatch
-                                  select info).SingleOrDefault();
+            var matchingTarget = (from m in GetMatchingSignatureInfo(invocation)
+                                  where m.SignaturesMatch
+                                  select m).SingleOrDefault();
 
             if (matchingTarget == null)
             {
@@ -31,7 +32,12 @@ namespace Interfacer.Proxies
             var parameterConverters = matchingTarget.ParameterConverters.Select(c => c.Convert()).ToArray();
             var convertedArgs = parameterConverters.Select(a => a.Value).ToArray();
 
-            matchingTarget.ReturnValueConverter.Value = matchingTarget.Method.Invoke(WrappedObject, convertedArgs);
+            var constructor = matchingTarget.Method as ConstructorInfo;
+            var result = constructor != null
+                ? constructor.Invoke(convertedArgs)
+                : matchingTarget.Method.Invoke(WrappedObject, convertedArgs);
+
+            matchingTarget.ReturnValueConverter.Value = result;
             invocation.ReturnValue = matchingTarget.ReturnValueConverter.Convert().Value;
 
             for (var i = 0; i < convertedArgs.Length; i++)
@@ -41,7 +47,9 @@ namespace Interfacer.Proxies
             }
         }
 
-        private MethodSignatureInfo GetMatchingSignatureInfo(MethodInfo checkTargetMethod, IInvocation invocation)
+        protected MethodSignatureInfo GetMatchingSignatureInfoForMethod(
+            MethodInfo checkTargetMethod,
+            IInvocation invocation)
         {
             var invokedMethod = invocation.Method;
 
@@ -50,7 +58,7 @@ namespace Interfacer.Proxies
                 checkTargetMethod.Name != invokedMethod.Name ||
                 checkTargetMethod.IsGenericMethod != invokedMethod.IsGenericMethod)
             {
-                return MethodSignatureInfo.NoMatch();
+                return new MethodSignatureInfo();
             }
 
             if (invocation.GenericArguments != null &&
@@ -62,56 +70,57 @@ namespace Interfacer.Proxies
                 }
                 else
                 {
-                    return MethodSignatureInfo.NoMatch();
+                    return new MethodSignatureInfo();
                 }
             }
+
+            return new MethodSignatureInfo
+            {
+                ParameterConverters = GetParameterConverters(checkTargetMethod, invocation),
+                Method = checkTargetMethod,
+                ReturnValueConverter = ValueConverter.For(checkTargetMethod.ReturnType).To(invokedMethod.ReturnType)
+            };
+        }
+
+        protected IList<ValueConverter.IConvertableState> GetParameterConverters(MethodBase checkTargetMethod, IInvocation invocation)
+        {
+            var invokedMethod = invocation.Method;
 
             var sourceParamTypes = invokedMethod.GetParameters().Select(p => p.ParameterType).ToArray();
             var targetParamTypes = checkTargetMethod.GetParameters().Select(p => p.ParameterType).ToArray();
 
             if (sourceParamTypes.Length != targetParamTypes.Length)
             {
-                return MethodSignatureInfo.NoMatch();
+                return null;
             }
 
-            var signatureInfo = new MethodSignatureInfo()
-            {
-                ParameterConverters = new List<ValueConverter.IConvertableState>()
-            };
-
+            var parameterConverters = new List<ValueConverter.IConvertableState>();
             var argCount = sourceParamTypes.Length;
             for (var i = 0; i < argCount; i++)
             {
-                signatureInfo.ParameterConverters.Add(
+                parameterConverters.Add(
                     ValueConverter.For(sourceParamTypes[i], invocation.Arguments[i])
                                   .To(targetParamTypes[i]));
             }
 
-            signatureInfo.Method = checkTargetMethod;
-
-            signatureInfo.ReturnValueConverter =
-                ValueConverter.For(checkTargetMethod.ReturnType).To(invokedMethod.ReturnType);
-
-            signatureInfo.SignaturesMatch = 
-                signatureInfo.ParameterConverters.All(c => c.CanConvert()) &&
-                signatureInfo.ReturnValueConverter.CanConvert();
-
-            return signatureInfo;
+            return parameterConverters;
         }
 
-        private class MethodSignatureInfo
+        protected class MethodSignatureInfo
         {
-            public MethodInfo Method { get; set; }
-            public bool SignaturesMatch { get; set; }
+            public MethodBase Method { get; set; }
             public IList<ValueConverter.IConvertableState> ParameterConverters { get; set; }
             public ValueConverter.IConvertableState ReturnValueConverter { get; set; }
 
-            public static MethodSignatureInfo NoMatch()
+            public bool SignaturesMatch
             {
-                return new MethodSignatureInfo()
+                get
                 {
-                    SignaturesMatch = false
-                };
+                    return ParameterConverters != null &&
+                           ReturnValueConverter != null &&
+                           ParameterConverters.All(c => c.CanConvert()) &&
+                           ReturnValueConverter.CanConvert();
+                }
             }
         }
     }

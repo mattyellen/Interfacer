@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attributes\ConstructorAttribute.cs" />
     <Compile Include="Exceptions\InvalidTypeException.cs" />
     <Compile Include="Proxies\ICanGetWrappedObject.cs" />
     <Compile Include="Proxies\InstanceProxy.cs" />
@@ -50,7 +51,7 @@
     <Compile Include="Proxies\ValueConverter.cs" />
     <Compile Include="Utility\EnumerableExtensions.cs" />
     <Compile Include="Utility\EnumExtensions.cs" />
-    <Compile Include="InterfacerAttribute.cs" />
+    <Compile Include="Attributes\InterfacerAttribute.cs" />
     <Compile Include="InterfacerFactory.cs" />
     <Compile Include="Exceptions\MethodNotFoundException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

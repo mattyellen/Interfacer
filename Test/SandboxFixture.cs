@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Dynamic;
 using Interfacer;
+using Interfacer.Attributes;
 using NUnit.Framework;
 
 namespace Test

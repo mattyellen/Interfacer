@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Castle.DynamicProxy;
+using Interfacer.Attributes;
 using Interfacer.Proxies;
 
 namespace Interfacer
