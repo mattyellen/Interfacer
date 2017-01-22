@@ -11,9 +11,21 @@ namespace Interfacer.Utility
         public static bool IsInstanceInterfaceOf(this Type interfacerType, Type objectType)
         {
             var attribute = InterfacerFactory.GetInterfacerAttribute(interfacerType);
-            return attribute != null &&
-                   attribute.Type == WrappedObjectType.Instance &&
-                   attribute.Class == objectType;
+            if (attribute == null || attribute.Type != WrappedObjectType.Instance)
+            {
+                return false;
+            }
+            
+            var @class = attribute.Class;
+            if (@class.ContainsGenericParameters &&
+                @class.GetGenericArguments().Count(a => a.IsGenericParameter) ==
+                objectType.GetGenericArguments().Length)
+            {
+                @class = @class.MakeGenericType(objectType.GetGenericArguments().ToArray());
+            }
+
+
+            return @class == objectType;
         }
     }
 }

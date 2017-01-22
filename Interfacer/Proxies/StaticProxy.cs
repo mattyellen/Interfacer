@@ -27,12 +27,11 @@ namespace Interfacer.Proxies
             {
                 var wrappedType = WrappedType;
 
-                if (invocation.GenericArguments != null &&
-                    WrappedType.ContainsGenericParameters)
+                if (WrappedType.ContainsGenericParameters)
                 {
-                    if (WrappedType.GetGenericArguments().Length == invocation.GenericArguments.Length)
+                    if (WrappedType.GetGenericArguments().Length == invocation.Method.ReturnType.GetGenericArguments().Length)
                     {
-                        wrappedType = wrappedType.MakeGenericType(invocation.GenericArguments);
+                        wrappedType = wrappedType.MakeGenericType(invocation.Method.ReturnType.GetGenericArguments());
                     }
                     else
                     {

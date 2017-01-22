@@ -10,13 +10,13 @@ using Test.TestClasses;
 namespace Test.Fixtures
 {
     [Interfacer(WrappedObjectType.Instance, typeof(TestObject))]
-    public interface ITestInstanceInterface : ITestInterface
+    public interface ITestObject : ITestObjectBase
     {
 
     }
 
     [TestFixture]
-    public class InstanceFixture : ProxyFixtureBase<ITestInstanceInterface>
+    public class InstanceFixture : ProxyFixtureBase<ITestObject>
     {
     }
 }

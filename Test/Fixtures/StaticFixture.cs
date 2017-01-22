@@ -10,12 +10,12 @@ using Test.TestClasses;
 namespace Test.Fixtures
 {
     [Interfacer(WrappedObjectType.Static, typeof(TestStaticClass))]
-    public interface ITestStaticInterface : ITestInterface
+    public interface ITestStaticClass : ITestObjectBase
     {
     }
 
     [TestFixture]
-    public class StaticFixture : ProxyFixtureBase<ITestStaticInterface>
+    public class StaticFixture : ProxyFixtureBase<ITestStaticClass>
     {
     }
 }

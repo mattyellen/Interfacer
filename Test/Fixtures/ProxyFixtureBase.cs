@@ -7,21 +7,21 @@ using Test.TestClasses;
 
 namespace Test.Fixtures
 {
-    public interface ITestInterface
+    public interface ITestObjectBase
     {
         int Value { get; set; }
         void DoIt();
         int GetValue();
         int GetValue(int num);
-        int AddValueFromObject(ITestInstanceInterface obj);
+        int AddValueFromObject(ITestObject obj);
         T GetObject<T>() where T : new();
         Tuple<T, T2> GetObject<T, T2>()
             where T : new()
             where T2 : new();
-        ITestInstanceInterface GetNewObject(bool returnNull = false);
+        ITestObject GetNewObject(bool returnNull = false);
         void GetValueOut(out int val);
         void GetValueRef(ref int val);
-        void GetObjectOut(out ITestInstanceInterface val);
+        void GetObjectOut(out ITestObject val);
         T GetFirst<T>(IEnumerable<T> values);
         event EventHandler<EventArgs> Event;
         void FireEvent();
@@ -30,7 +30,7 @@ namespace Test.Fixtures
         void GetTripleValue(out int[] vals);
     }
 
-    public class ProxyFixtureBase<TInterfaceType> where TInterfaceType : class, ITestInterface
+    public class ProxyFixtureBase<TInterfaceType> where TInterfaceType : class, ITestObjectBase
     {
         private int _testValue = 999;
 
@@ -123,7 +123,7 @@ namespace Test.Fixtures
         [Test]
         public void ShouldSupportMethodWithWrappedOutParamter()
         {
-            ITestInstanceInterface outObject;
+            ITestObject outObject;
             CreateObject().GetObjectOut(out outObject);
 
             Assert.That(outObject.Value, Is.EqualTo(_testValue));
@@ -177,7 +177,7 @@ namespace Test.Fixtures
         [Test]
         public void ShouldHandleInterfacerWrappedArguments()
         {
-            var obj = CreateObjectForInterface<ITestInstanceInterface>();
+            var obj = CreateObjectForInterface<ITestObject>();
             var result = CreateObject().AddValueFromObject(obj);
 
             Assert.That(result, Is.EqualTo(_testValue * 2));
@@ -188,7 +188,7 @@ namespace Test.Fixtures
             return CreateObjectForInterface<TInterfaceType>();
         }
 
-        private T CreateObjectForInterface<T>() where T : class, ITestInterface
+        private T CreateObjectForInterface<T>() where T : class, ITestObjectBase
         {
             var obj = InterfacerFactory.Create<T>();
             obj.Value = _testValue;
