@@ -11,7 +11,7 @@ namespace Interfacer.Utility
         public static bool IsInstanceInterfaceOf(this Type interfacerType, Type objectType)
         {
             var attribute = InterfacerFactory.GetInterfacerAttribute(interfacerType);
-            if (attribute == null || attribute.Type != WrappedObjectType.Instance)
+            if (!(attribute is ApplyToInstanceAttribute))
             {
                 return false;
             }

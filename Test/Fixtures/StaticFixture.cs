@@ -9,7 +9,7 @@ using Test.TestClasses;
 
 namespace Test.Fixtures
 {
-    [Interfacer(WrappedObjectType.Static, typeof(TestStaticClass))]
+    [ApplyToStatic(typeof(TestStaticClass))]
     public interface ITestStaticClass : ITestObjectBase
     {
     }

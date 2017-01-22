@@ -9,7 +9,7 @@ using Test.TestClasses;
 
 namespace Test.Fixtures
 {
-    [Interfacer(WrappedObjectType.Instance, typeof(TestObject))]
+    [ApplyToInstance(typeof(TestObject))]
     public interface ITestObject : ITestObjectBase
     {
 

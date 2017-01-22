@@ -6,7 +6,7 @@ using Test.TestClasses;
 
 namespace Test.Fixtures
 {
-    [Interfacer(WrappedObjectType.Static, typeof(TestObject))]
+    [ApplyToStatic(typeof(TestObject))]
     public interface ITestObjectFactory : ITestObjectBase
     {
         [Constructor]
@@ -16,14 +16,14 @@ namespace Test.Fixtures
         ITestObject Create(int value);
     }
 
-    [Interfacer(WrappedObjectType.Instance, typeof(TestObjectWithGenericTypes<,>))]
+    [ApplyToInstance(typeof(TestObjectWithGenericTypes<,>))]
     public interface ITestObjectWithGenericTypes<T1, T2>
     {
         T1 Value1 { get; }
         T2 Value2 { get; }
     }
 
-    [Interfacer(WrappedObjectType.Static, typeof(TestObjectWithGenericTypes<,>))]
+    [ApplyToStatic(typeof(TestObjectWithGenericTypes<,>))]
     public interface ITestObjectWithGenericTypesFactory<T1>
     {
         [Constructor]

@@ -13,8 +13,7 @@ namespace Interfacer
             VerifyInterfaceType(typeof(TInterface));
 
             var attribute = GetInterfacerAttribute(typeof(TInterface));
-
-            if (attribute.Type == WrappedObjectType.Instance)
+            if (attribute is ApplyToInstanceAttribute)
             {
                 var wrappedObject = Activator.CreateInstance(attribute.Class);
                 return (TInterface) ValueConverter
@@ -24,7 +23,7 @@ namespace Interfacer
                     .Value;
             }
 
-            if (attribute.Type == WrappedObjectType.Static)
+            if (attribute is ApplyToStaticAttribute)
             {
                 var proxyGenerator = new ProxyGenerator();
                 return proxyGenerator.CreateInterfaceProxyWithoutTarget<TInterface>(new StaticProxy(attribute.Class));
@@ -47,9 +46,9 @@ namespace Interfacer
         }
 
 
-        internal static InterfacerAttribute GetInterfacerAttribute(Type type)
+        internal static InterfacerBaseAttribute GetInterfacerAttribute(Type type)
         {
-            return (InterfacerAttribute) type.GetCustomAttributes(true).FirstOrDefault(a => a is InterfacerAttribute);
+            return (InterfacerBaseAttribute) type.GetCustomAttributes(true).FirstOrDefault(a => a is InterfacerBaseAttribute);
         }
     }
 }

@@ -9,7 +9,7 @@ namespace Test
     [TestFixture]
     public class SandboxFixture
     {
-        [Interfacer(WrappedObjectType.Instance, typeof(Process))]
+        [ApplyToInstance(typeof(Process))]
         public interface IProcess
         {
             ProcessStartInfo StartInfo { get; }
