@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using Castle.DynamicProxy;
+using Interfacer.Attributes;
 using Interfacer.Exceptions;
 using Interfacer.Utility;
 
@@ -26,7 +27,9 @@ namespace Interfacer.Proxies
 
             if (matchingTarget == null)
             {
-                throw new MethodNotFoundException($"Failed to find a method of type {WrappedType} with signature {invocation.Method}");
+                throw IsConstructorCall(invocation)
+                    ? new ConstructorNotFoundException(WrappedType, invocation.Method)
+                    : new MethodNotFoundException(WrappedType, invocation.Method);
             }
 
             var parameterConverters = matchingTarget.ParameterConverters.Select(c => c.Convert()).ToArray();
@@ -45,6 +48,11 @@ namespace Interfacer.Proxies
                 parameterConverters[i].Value = convertedArgs[i];
                 invocation.Arguments[i] = parameterConverters[i].ConvertBack().Value;                
             }
+        }
+
+        protected bool IsConstructorCall(IInvocation invocation)
+        {
+            return invocation.Method.GetCustomAttributes(typeof(ConstructorAttribute), true).Any();
         }
 
         protected MethodSignatureInfo GetMatchingSignatureInfoForMethod(

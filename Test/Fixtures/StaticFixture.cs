@@ -14,8 +14,13 @@ namespace Test.Fixtures
     {
     }
 
+    [ApplyToStatic(typeof(TestStaticClass))]
+    public interface IValidTestStaticClass : ITestObjectValidBase
+    {
+    }
+
     [TestFixture]
-    public class StaticFixture : ProxyFixtureBase<ITestStaticClass>
+    public class StaticFixture : ProxyFixtureBase<ITestStaticClass, IValidTestStaticClass>
     {
     }
 }

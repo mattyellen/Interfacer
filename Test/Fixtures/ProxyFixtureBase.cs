@@ -2,12 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using Interfacer;
+using Interfacer.Exceptions;
 using NUnit.Framework;
 using Test.TestClasses;
 
 namespace Test.Fixtures
 {
-    public interface ITestObjectBase
+    public interface ITestObjectBase : ITestObjectValidBase
+    {
+        T NoSuchMethod<T>();
+    }
+
+    public interface ITestObjectValidBase
     {
         int Value { get; set; }
         void DoIt();
@@ -25,12 +31,13 @@ namespace Test.Fixtures
         T GetFirst<T>(IEnumerable<T> values);
         event EventHandler<EventArgs> Event;
         void FireEvent();
-        T NoSuchMethod<T>();
         int AddValuesFromArray(int[] vals);
         void GetTripleValue(out int[] vals);
     }
 
-    public class ProxyFixtureBase<TInterfaceType> where TInterfaceType : class, ITestObjectBase
+    public class ProxyFixtureBase<TInterface, TValidInterface> 
+        where TInterface : class, ITestObjectBase 
+        where TValidInterface : class, ITestObjectValidBase
     {
         private int _testValue = 999;
 
@@ -183,9 +190,21 @@ namespace Test.Fixtures
             Assert.That(result, Is.EqualTo(_testValue * 2));
         }
 
-        private TInterfaceType CreateObject()
+        [Test]
+        public void VerifyShouldNotThrowForValidInterface()
         {
-            return CreateObjectForInterface<TInterfaceType>();
+            Assert.That(InterfacerFactory.Verify<TValidInterface>, Throws.Nothing);
+        }
+
+        [Test]
+        public void VerifyShouldThrowForInvalidInterface()
+        {
+            Assert.That(InterfacerFactory.Verify<TInterface>, Throws.Exception.TypeOf<InvalidInterfaceException>());
+        }
+
+        private TInterface CreateObject()
+        {
+            return CreateObjectForInterface<TInterface>();
         }
 
         private T CreateObjectForInterface<T>() where T : class, ITestObjectBase

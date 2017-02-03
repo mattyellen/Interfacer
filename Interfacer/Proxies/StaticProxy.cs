@@ -21,7 +21,7 @@ namespace Interfacer.Proxies
 
         protected override IEnumerable<MethodSignatureInfo> GetMatchingSignatureInfo(IInvocation invocation)
         {
-            var isConstructorCall = invocation.Method.GetCustomAttributes(typeof(ConstructorAttribute), true).Any();
+            var isConstructorCall = IsConstructorCall(invocation);
 
             if (isConstructorCall)
             {

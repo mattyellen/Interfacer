@@ -1,13 +1,21 @@
 ﻿using System.Collections.Generic;
 using Interfacer;
 using Interfacer.Attributes;
+using Interfacer.Exceptions;
 using NUnit.Framework;
 using Test.TestClasses;
 
 namespace Test.Fixtures
 {
     [ApplyToStatic(typeof(TestObject))]
-    public interface ITestObjectFactory : ITestObjectBase
+    public interface ITestObjectFactory : IValidTestObjectFactory
+    {
+        [Constructor]
+        ITestObject InvalidCreate(int value, long anotherValue);
+    }
+
+    [ApplyToStatic(typeof(TestObject))]
+    public interface IValidTestObjectFactory
     {
         [Constructor]
         ITestObject Create();
@@ -15,6 +23,7 @@ namespace Test.Fixtures
         [Constructor]
         ITestObject Create(int value);
     }
+
 
     [ApplyToInstance(typeof(TestObjectWithGenericTypes<,>))]
     public interface ITestObjectWithGenericTypes<T1, T2>
@@ -62,6 +71,25 @@ namespace Test.Fixtures
 
             Assert.That(obj.Value1, Is.EqualTo(expectedInt));
             Assert.That(obj.Value2, Is.EquivalentTo(expectedList));
+        }
+
+        [Test]
+        public void ShouldThrowIfConstructorNotFound()
+        {
+            var factory = InterfacerFactory.Create<ITestObjectFactory>();
+            Assert.That(() => { factory.InvalidCreate(1, 2); }, Throws.Exception.TypeOf<ConstructorNotFoundException>());
+        }
+
+        [Test]
+        public void VerifyShouldNotThrowForInterfaceWithValidConstructorMethods()
+        {
+            Assert.That(InterfacerFactory.Verify<IValidTestObjectFactory>, Throws.Nothing);
+        }
+
+        [Test]
+        public void VerifyShouldNotThrowForInterfaceWithValidConstructorMethods2()
+        {
+            Assert.That(() => { InterfacerFactory.Verify(typeof(ITestObjectWithGenericTypesFactory<>)); }, Throws.Nothing);
         }
     }
 }

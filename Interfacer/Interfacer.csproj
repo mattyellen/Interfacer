@@ -46,6 +46,8 @@
     <Compile Include="Attributes\ApplyToInstanceAttribute.cs" />
     <Compile Include="Attributes\ApplyToStaticAttribute.cs" />
     <Compile Include="Attributes\ConstructorAttribute.cs" />
+    <Compile Include="Exceptions\ConstructorNotFoundException.cs" />
+    <Compile Include="Exceptions\InvalidInterfaceException.cs" />
     <Compile Include="Exceptions\InvalidTypeException.cs" />
     <Compile Include="Proxies\ICanGetWrappedObject.cs" />
     <Compile Include="Proxies\InstanceProxy.cs" />
