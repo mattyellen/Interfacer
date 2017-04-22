@@ -2,12 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Text;
 using Castle.DynamicProxy;
 using Interfacer.Attributes;
 using Interfacer.Exceptions;
-using Interfacer.Utility;
 
 namespace Interfacer.Proxies
 {
