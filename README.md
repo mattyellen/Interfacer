@@ -6,7 +6,7 @@ Interfacer allows you to apply custom interfaces to 3rd party classes (such as t
 
 Using interfaces allows your code to be decoupled from the concrete implementation of its dependencies.  Objects and services can then be resolved through dependency injection and mocked in unit tests.
 
-# Usage
+## Usage
 
 Start with a class that doesn't currently implement an interface -- for example: [System.Threading.Semaphore](https://msdn.microsoft.com/en-us/library/system.threading.semaphore(v=vs.110).aspx). Let's create an interface for it.
 ```
@@ -54,3 +54,12 @@ ISemaphore semaphore = semaphoreStatic.Create(10, 10);
 semaphore.WaitOne();
 ```
 And there you have it.  Other advanced features like generics, out parameters, and covariance / contravariance should all just work as expected.
+
+## Verification
+
+Because these interfaces are applied at runtime it is useful to confirm all the method signatures are correct.
+```
+InterfacerFactory.Verify<ISemaphore>();
+InterfacerFactory.Verify<ISemaphoreStatic>();
+```
+The `InterfacerFactory.Verify<>()` method will throw if there are any problems.  I recommend just dropping these into a unit test to quickly catch any errors.
