@@ -6,6 +6,10 @@ Interfacer allows you to apply custom interfaces to 3rd party classes (such as t
 
 Using interfaces allows your code to be decoupled from the concrete implementation of its dependencies.  Objects and services can then be resolved through dependency injection and mocked in unit tests.
 
+## Dependencies
+* .NET Framework 3.5 or later
+* [Castle Core 3.3.3](https://www.nuget.org/packages/Castle.Core/3.3.3)
+
 ## Usage
 
 Start with a class that doesn't currently implement an interface -- for example: [System.Threading.Semaphore](https://msdn.microsoft.com/en-us/library/system.threading.semaphore(v=vs.110).aspx). Let's create an interface for it.
@@ -33,7 +37,7 @@ So how do we actually use this now?  Easy.
 ISemaphoreStatic semaphoreStatic = InterfacerFactory.Create<ISemaphoreStatic>();
 ISemaphore semaphore = semaphoreStatic.OpenExisting("foo");
 ```
-The `InterfacerFactory.Create<>()` method can be used to create instances of any static wrapper classes, or instance wrappers as long as the wrapped object has a parameterless constructor.  However in this case the constuctors of Semaphore all have parameters; so how do we make a new Semaphore instance?  Simple, just think of a constructor as another kind of static method.
+The `InterfacerFactory.Create<>()` method can be used to create instances of any static wrapper classes, or instance wrappers as long as the wrapped object has a parameterless constructor.  However in this case the constructors of Semaphore all have parameters; so how do we make a new Semaphore instance?  Simple, just think of a constructor as another kind of static method.
 ```
 [ApplyToStatic(typeof(Semaphore))]
 public interface ISemaphoreStatic
