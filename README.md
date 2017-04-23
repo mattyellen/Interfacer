@@ -3,15 +3,16 @@
 Interfacer allows you to apply custom interfaces to 3rd party classes (such as the .NET Framework).  It works by automatically generating wrapper classes using Castle Project's [DynamicProxy](http://www.castleproject.org/projects/dynamicproxy/).
 
 #### Why do I want this?
-
 Using interfaces allows your code to be decoupled from the concrete implementation of its dependencies.  Objects and services can then be resolved through dependency injection and mocked in unit tests.
+
+## Installation
+Just grab the latest version from [NuGet].(https://www.nuget.org/packages/Interfacer/)
 
 ## Dependencies
 * .NET Framework 3.5 or later
 * [Castle Core 3.3.3](https://www.nuget.org/packages/Castle.Core/3.3.3)
 
 ## Usage
-
 Start with a class that doesn't currently implement an interface -- for example: [System.Threading.Semaphore](https://msdn.microsoft.com/en-us/library/system.threading.semaphore(v=vs.110).aspx). Let's create an interface for it.
 ```
 [ApplyToInstance(typeof(Semaphore))]
@@ -60,7 +61,6 @@ semaphore.WaitOne();
 And there you have it.  Other advanced features like generics, out parameters, and covariance / contravariance should all just work as expected.
 
 ## Verification
-
 Because these interfaces are applied at runtime it is useful to confirm all the method signatures are correct.
 ```
 InterfacerFactory.Verify<ISemaphore>();
