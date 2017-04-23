@@ -6,7 +6,7 @@ Interfacer allows you to apply custom interfaces to 3rd party classes (such as t
 Using interfaces allows your code to be decoupled from the concrete implementation of its dependencies.  Objects and services can then be resolved through dependency injection and mocked in unit tests.
 
 ## Installation
-Just grab the latest version from [NuGet].(https://www.nuget.org/packages/Interfacer/)
+Just grab the latest version from [NuGet](https://www.nuget.org/packages/Interfacer/).
 
 ## Dependencies
 * .NET Framework 3.5 or later
