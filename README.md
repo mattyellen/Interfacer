@@ -17,7 +17,7 @@ Start with a class that doesn't currently implement an interface -- for example:
 [ApplyToInstance(typeof(Semaphore))]
 public interface ISemaphore
 {
-    void WaitOne();
+    bool WaitOne();
     int Release();
 }
 ```
