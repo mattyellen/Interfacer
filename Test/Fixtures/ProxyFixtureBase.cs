@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Castle.MicroKernel.Registration;
+using Castle.Windsor;
 using Interfacer;
 using Interfacer.Exceptions;
 using NUnit.Framework;
@@ -200,6 +202,16 @@ namespace Test.Fixtures
         public void VerifyShouldThrowForInvalidInterface()
         {
             Assert.That(InterfacerFactory.Verify<TInterface>, Throws.Exception.TypeOf<InvalidInterfaceException>());
+        }
+
+        [Test]
+        public void ShouldBeResolvableWithCastleWindsor()
+        {
+            var container = new WindsorContainer();
+            container.Register(Component.For<TInterface>()
+                .UsingFactoryMethod(InterfacerFactory.Create<TInterface>));
+
+            container.Resolve<TInterface>();
         }
 
         private TInterface CreateObject()

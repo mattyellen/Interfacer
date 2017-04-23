@@ -30,7 +30,12 @@ namespace Interfacer
             if (attribute is ApplyToStaticAttribute)
             {
                 var proxyGenerator = new ProxyGenerator();
-                return proxyGenerator.CreateInterfaceProxyWithoutTarget<TInterface>(new StaticProxy(attribute.Class));
+                var proxy = proxyGenerator.CreateInterfaceProxyWithoutTarget<TInterface>(new StaticProxy(attribute.Class));
+
+                // HACK - Castle.Windsor can't resolve to a proxy without a target.
+                proxy.GetType().GetField("__target").SetValue(proxy, proxy);
+
+                return proxy;
             }
 
             throw new NotImplementedException();
