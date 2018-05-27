@@ -31,7 +31,7 @@ namespace Interfacer
             if (attribute is ApplyToStaticAttribute)
             {
                 var proxyGenerator = new ProxyGenerator();
-	            var proxy = proxyGenerator.CreateResolvableInterfaceProxyWithoutTarget<TInterface>(new StaticProxy(attribute.Class));
+                var proxy = proxyGenerator.CreateResolvableInterfaceProxyWithoutTarget<TInterface>(new StaticProxy(attribute.Class));
 
                 return proxy;
             }
