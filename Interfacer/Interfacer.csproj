@@ -60,6 +60,7 @@
     <Compile Include="Exceptions\MethodNotFoundException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Proxies\ProxyBase.cs" />
+    <Compile Include="Utility\ProxyGeneratorExtensions.cs" />
     <Compile Include="Utility\TypeExtensions.cs" />
   </ItemGroup>
   <ItemGroup>

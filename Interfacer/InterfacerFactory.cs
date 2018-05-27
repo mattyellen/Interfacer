@@ -7,6 +7,7 @@ using Castle.DynamicProxy;
 using Interfacer.Attributes;
 using Interfacer.Exceptions;
 using Interfacer.Proxies;
+using Interfacer.Utility;
 
 namespace Interfacer
 {
@@ -30,10 +31,7 @@ namespace Interfacer
             if (attribute is ApplyToStaticAttribute)
             {
                 var proxyGenerator = new ProxyGenerator();
-                var proxy = proxyGenerator.CreateInterfaceProxyWithoutTarget<TInterface>(new StaticProxy(attribute.Class));
-
-                // HACK - Castle.Windsor can't resolve to a proxy without a target.
-                proxy.GetType().GetField("__target").SetValue(proxy, proxy);
+	            var proxy = proxyGenerator.CreateResolvableInterfaceProxyWithoutTarget<TInterface>(new StaticProxy(attribute.Class));
 
                 return proxy;
             }

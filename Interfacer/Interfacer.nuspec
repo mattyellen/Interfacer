@@ -10,7 +10,7 @@
     <projectUrl>https://github.com/mattyellen/Interfacer</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Interfacer allows you to apply custom interfaces to 3rd party classes (such as the .NET Framework). It works by automatically generating wrapper classes using Castle Project's DynamicProxy.</description>
-    <releaseNotes></releaseNotes>
+    <releaseNotes>Fixed an issue when resolving objects through Castle.Windsor.</releaseNotes>
     <copyright>Copyright 2017</copyright>
     <tags></tags>
   </metadata>

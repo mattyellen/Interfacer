@@ -144,10 +144,7 @@ namespace Interfacer.Proxies
         private object CreateInstanceProxyForObject(Type interfacerType, object wrappedObject)
         {
             var proxyGenerator = new ProxyGenerator();
-            var proxy = proxyGenerator.CreateInterfaceProxyWithoutTarget(interfacerType, new[] { typeof(ICanGetWrappedObject) }, new InstanceProxy(wrappedObject));
-
-            // HACK - Castle.Windsor can't resolve to a proxy without a target.
-            proxy.GetType().GetField("__target").SetValue(proxy, proxy);
+            var proxy = proxyGenerator.CreateResolvableInterfaceProxyWithoutTarget(interfacerType, new[] { typeof(ICanGetWrappedObject) }, new InstanceProxy(wrappedObject));
 
             return proxy;
         }
