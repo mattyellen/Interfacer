@@ -80,5 +80,10 @@ namespace Test.TestClasses
         {
             Event?.Invoke(null, EventArgs.Empty);
         }
+
+        public static int AddValuesFromParams(params int[] vals)
+        {
+            return vals.Sum();
+        }
     }
 }

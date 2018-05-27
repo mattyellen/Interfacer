@@ -35,6 +35,7 @@ namespace Test.Fixtures
         void FireEvent();
         int AddValuesFromArray(int[] vals);
         void GetTripleValue(out int[] vals);
+        int AddValuesFromParams(params int[] vals);
     }
 
     public class ProxyFixtureBase<TInterface, TValidInterface> 
@@ -160,6 +161,14 @@ namespace Test.Fixtures
             obj.FireEvent();
             Assert.That(firedEvent, Is.True);
         }
+
+        [Test]
+        public void ShouldSupportMethodWithDynamicParameters()
+        {
+            var result = CreateObject().AddValuesFromParams(123, 456, 789);
+            Assert.That(result, Is.EqualTo(new[]{ 123, 456, 789}.Sum()));
+        }
+
 
         [Test]
         public void ShouldThrowIfMethodNotFoundOnWrappedObject()
