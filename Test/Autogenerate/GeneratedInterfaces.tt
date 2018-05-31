@@ -1,0 +1,8 @@
+﻿<#@ template debug="true" hostspecific="false" language="C#" #>
+<#@ assembly name="$(ProjectDir)bin\$(Configuration)\Interfacer.dll" #>
+<#@ assembly name="$(ProjectDir)bin\$(Configuration)\Test.dll" #>
+<#@ import namespace="Test.Autogenerate" #>
+<#@ output extension=".cs" #>
+
+<# var code = new Interfacer.Generator("v3.5").GenerateAll<IAutogenerate>(); #>
+<#= code #>

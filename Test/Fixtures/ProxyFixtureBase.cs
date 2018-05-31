@@ -26,6 +26,9 @@ namespace Test.Fixtures
         Tuple<T, T2> GetObject<T, T2>()
             where T : new()
             where T2 : new();
+        Tuple<Tuple<T, T2>, Tuple<T, T2>> GetTupleTuple<T, T2>()
+            where T : new()
+            where T2 : new();
         ITestObject GetNewObject(bool returnNull = false);
         void GetValueOut(out int val);
         void GetValueRef(ref int val);
@@ -88,6 +91,16 @@ namespace Test.Fixtures
             var tuple2 = CreateObject().GetObject<TestObject, List<TestObject>>();
             Assert.That(tuple2.Item1, Is.InstanceOf<TestObject>());
             Assert.That(tuple2.Item2, Is.InstanceOf<List<TestObject>>());
+        }
+
+        [Test]
+        public void ShouldSupportMethodWithComplexGenericParameterTypes()
+        {
+            var tuple2 = CreateObject().GetTupleTuple<TestObject, List<TestObject>>();
+            Assert.That(tuple2.Item1.Item1, Is.InstanceOf<TestObject>());
+            Assert.That(tuple2.Item1.Item2, Is.InstanceOf<List<TestObject>>());
+            Assert.That(tuple2.Item2.Item1, Is.InstanceOf<TestObject>());
+            Assert.That(tuple2.Item2.Item2, Is.InstanceOf<List<TestObject>>());
         }
 
         [Test]

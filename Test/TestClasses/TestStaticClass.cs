@@ -61,6 +61,13 @@ namespace Test.TestClasses
             return Tuple.Create(new T(), new T2());
         }
 
+        public static Tuple<Tuple<T, T2>, Tuple<T, T2>> GetTupleTuple<T, T2>()
+            where T : new()
+            where T2 : new()
+        {
+            return Tuple.Create(Tuple.Create(new T(), new T2()), Tuple.Create(new T(), new T2()));
+        }
+
         public static TestObject GetNewObject(bool returnNull = false)
         {
             return returnNull ? null : new TestObject();

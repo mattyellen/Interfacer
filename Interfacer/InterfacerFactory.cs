@@ -1,11 +1,14 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using Castle.DynamicProxy;
 using Interfacer.Attributes;
 using Interfacer.Exceptions;
+using Interfacer.Generators;
 using Interfacer.Proxies;
 using Interfacer.Utility;
 
@@ -112,7 +115,7 @@ namespace Interfacer
             }
         }
 
-        private static void VerifyInterfaceType(Type type)
+        internal static void VerifyInterfaceType(Type type)
         {
             if (!type.IsInterface)
             {

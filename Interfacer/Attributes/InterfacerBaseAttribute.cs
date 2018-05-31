@@ -9,5 +9,7 @@ namespace Interfacer.Attributes
         {
             Class = @class;
         }
+
+        public bool Autogenerate { get; set; }
     }
 }
