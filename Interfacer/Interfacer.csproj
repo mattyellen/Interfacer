@@ -14,18 +14,13 @@
 
   <PropertyGroup>
     <Version>1.1.0</Version>
-    <Authors>Matt Yellen</Authors>
+    <Authors>matt.yellen</Authors>
     <Description>Interfacer allows you to apply custom interfaces to 3rd party classes (such as the .NET Framework). It works by automatically generating wrapper classes using Castle Project's DynamicProxy.</Description>
     <Copyright>Copyright (c) 2018 Matt Yellen</Copyright>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <PackageId>Interfacer</PackageId>
-    <PackageVersion>1.1.0</PackageVersion>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <PackageTags></PackageTags>
     <PackageLicenseUrl>https://github.com/mattyellen/Interfacer/blob/master/LICENSE.txt</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/mattyellen/Interfacer</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/mattyellen/Interfacer</RepositoryUrl>
+    <PackageReleaseNotes>Added support for .NET Standard 2.0</PackageReleaseNotes>
   </PropertyGroup>
   
 </Project>
