@@ -22,7 +22,6 @@ namespace Interfacer.Utility
                 @class = @class.MakeGenericType(objectType.GetGenericArguments().ToArray());
             }
 
-
             return @class == objectType;
         }
     }

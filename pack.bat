@@ -1,3 +1,3 @@
 cd Interfacer
-nuget pack Interfacer.csproj -IncludeReferencedProjects -properties Configuration=Release
+msbuild /t:pack /p:Configuration=Release
 cd ..
