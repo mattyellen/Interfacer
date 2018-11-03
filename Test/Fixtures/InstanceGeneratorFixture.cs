@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 using Interfacer;
 using Interfacer.Generators;
-using Microsoft.Build.Tasks;
 using NUnit.Framework;
 using Test.Autogenerate;
 using Test.TestClasses;
