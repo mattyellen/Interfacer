@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
+﻿using System.Diagnostics;
 using Interfacer.Attributes;
-using Test.Fixtures;
 using Test.TestClasses;
+using TestClasses;
 
-namespace Test.Autogenerate
+namespace GenerateInterfaces
 {
     public interface IAutogenerate { }
 

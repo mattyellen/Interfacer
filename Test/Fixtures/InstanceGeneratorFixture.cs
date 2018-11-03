@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
+using GenerateInterfaces;
 using Interfacer;
 using Interfacer.Generators;
 using NUnit.Framework;
-using Test.Autogenerate;
-using Test.TestClasses;
+using TestClasses;
 
 namespace Test.Fixtures
 {

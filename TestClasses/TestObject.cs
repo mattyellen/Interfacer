@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Test.Fixtures;
 
-namespace Test.TestClasses
+namespace TestClasses
 {
     public class TestObject
     {
@@ -78,10 +77,10 @@ namespace Test.TestClasses
             return Tuple.Create(Tuple.Create(new T(), new T2()), Tuple.Create(new T(), new T2()));
         }
 
-        public T GetObjectConstrained<T, T2>() where T : class, ITestObject, T2, new()
-        {
-            return new T();
-        }
+        //public T GetObjectConstrained<T, T2>() where T : class, ITestObject, T2, new()
+        //{
+        //    return new T();
+        //}
 
         public TestObject GetNewObject(bool returnNull = false)
         {

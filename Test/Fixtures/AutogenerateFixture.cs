@@ -1,7 +1,6 @@
-﻿using Interfacer;
+﻿using GenerateInterfaces;
+using Interfacer;
 using NUnit.Framework;
-using Test.Autogenerate;
-using Test.TestClasses;
 
 namespace Test.Fixtures
 {

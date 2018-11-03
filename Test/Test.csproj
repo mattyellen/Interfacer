@@ -12,14 +12,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\GenerateInterfaces\GenerateInterfaces.csproj" />
     <ProjectReference Include="..\Interfacer\Interfacer.csproj" />
+    <ProjectReference Include="..\TestClasses\TestClasses.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Autogenerate\GeneratedInterfaces.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>GeneratedInterfaces.cs</LastGenOutput>
-    </None>
     <None Update="GeneratedInterfaces.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>

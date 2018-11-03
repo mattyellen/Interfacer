@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Interfacer;
-using Interfacer.Attributes;
-using Interfacer.Exceptions;
+﻿using Interfacer.Attributes;
 using NUnit.Framework;
-using Test.TestClasses;
+using TestClasses;
 
 namespace Test.Fixtures
 {

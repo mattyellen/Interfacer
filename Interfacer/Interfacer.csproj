@@ -30,8 +30,4 @@
     <RunPostBuildEvent>Always</RunPostBuildEvent>
   </PropertyGroup>
 
-  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="echo %FrameworkDir%&#xD;&#xA;echo $(FrameworkSDKDir)&#xD;&#xA;echo $(TargetDir)&#xD;&#xA;" />
-  </Target>
-  
 </Project>

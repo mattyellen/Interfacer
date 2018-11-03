@@ -6,7 +6,7 @@ using Castle.Windsor;
 using Interfacer;
 using Interfacer.Exceptions;
 using NUnit.Framework;
-using Test.TestClasses;
+using TestClasses;
 
 namespace Test.Fixtures
 {
