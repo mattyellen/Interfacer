@@ -15,15 +15,20 @@ namespace Interfacer
     {
         public static TInterface Create<TInterface>() where TInterface : class
         {
-            VerifyInterfaceType(typeof(TInterface));
+            return (TInterface) Create(typeof(TInterface));
+        }
 
-            var attribute = GetInterfacerAttribute(typeof(TInterface));
+        public static object Create(Type type)
+        {
+            VerifyInterfaceType(type);
+
+            var attribute = GetInterfacerAttribute(type);
             if (attribute is ApplyToInstanceAttribute)
             {
                 var wrappedObject = Activator.CreateInstance(attribute.Class);
-                return (TInterface) ValueConverter
+                return ValueConverter
                     .For(attribute.Class, wrappedObject)
-                    .To(typeof(TInterface))
+                    .To(type)
                     .Convert()
                     .Value;
             }
@@ -31,7 +36,7 @@ namespace Interfacer
             if (attribute is ApplyToStaticAttribute)
             {
                 var proxyGenerator = new ProxyGenerator();
-                var proxy = proxyGenerator.CreateResolvableInterfaceProxyWithoutTarget<TInterface>(new StaticProxy(attribute.Class));
+                var proxy = proxyGenerator.CreateResolvableInterfaceProxyWithoutTarget(type, null, new StaticProxy(attribute.Class));
 
                 return proxy;
             }
