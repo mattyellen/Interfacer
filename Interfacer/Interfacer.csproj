@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <PropertyGroup>
-    <Version>1.1.0</Version>
+    <Version>1.1.1</Version>
     <Authors>matt.yellen</Authors>
     <Description>Interfacer allows you to apply custom interfaces to 3rd party classes (such as the .NET Framework). It works by automatically generating wrapper classes using Castle Project's DynamicProxy.</Description>
     <Copyright>Copyright (c) 2018 Matt Yellen</Copyright>
