@@ -1,21 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFrameworks>net461;netcoreapp2.1</TargetFrameworks>
   </PropertyGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Interfacer\Interfacer.csproj" />
     <ProjectReference Include="..\TestClasses\TestClasses.csproj" />
   </ItemGroup>
-
   <ItemGroup>
+    <Folder Include="Generated" />
     <Folder Include="Generated\" />
   </ItemGroup>
-
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(TargetFramework)'=='net461'">
     <Exec Command="$(TargetPath) $(ProjectDir)\Generated\AutomaticInterfaces.Generated.cs" />
   </Target>
-
 </Project>

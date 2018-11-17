@@ -4,6 +4,11 @@ using System.Linq;
 
 namespace TestClasses
 {
+    public interface ITypeContraint
+    {
+
+    }
+
     public class TestObject
     {
         public TestObject()
@@ -77,12 +82,12 @@ namespace TestClasses
             return Tuple.Create(Tuple.Create(new T(), new T2()), Tuple.Create(new T(), new T2()));
         }
 
-        //public T GetObjectConstrained<T, T2>() where T : class, ITestObject, T2, new()
-        //{
-        //    return new T();
-        //}
+		public T GetObjectConstrained<T, T2>() where T : class, ITypeContraint, T2, new()
+		{
+			return new T();
+		}
 
-        public TestObject GetNewObject(bool returnNull = false)
+		public TestObject GetNewObject(bool returnNull = false)
         {
             return returnNull ? null : new TestObject();
         }

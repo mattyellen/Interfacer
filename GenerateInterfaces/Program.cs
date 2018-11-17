@@ -3,12 +3,12 @@ using Interfacer;
 
 namespace GenerateInterfaces
 {
-    class Program
+    public class Program
     {
         static void Main(string[] args)
         {
-	        var code = new Generator("v3.5").GenerateAll<IAutogenerate>();
-            File.WriteAllText(args[0], code);
+	        //var code = new Generator("v3.5").GenerateAll<IAutogenerate>();
+         //   File.WriteAllText(args[0], code);
         }
     }
 }

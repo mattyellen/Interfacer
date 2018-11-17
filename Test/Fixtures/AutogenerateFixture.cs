@@ -24,5 +24,11 @@ namespace Test.Fixtures
         {
             Assert.That(() => InterfacerFactory.Verify(typeof(ITestObjectWithGenericTypesAuto<,>)), Throws.Nothing);
         }
+
+        [Test]
+        public void RefAssm()
+        {
+            var assem = TargetFramework.GetReferenceAssemblyDirectories(TargetFramework.Moniker.Net45);
+        }
     }
 }
