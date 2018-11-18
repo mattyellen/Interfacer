@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Castle.MicroKernel.Registration;
-using Castle.Windsor;
 using Interfacer;
 using Interfacer.Exceptions;
 using NUnit.Framework;
 using TestClasses;
+
+#if !NET35
+using Castle.MicroKernel.Registration;
+using Castle.Windsor;
+#endif
 
 namespace Test.Fixtures
 {
@@ -226,6 +229,7 @@ namespace Test.Fixtures
             Assert.That(InterfacerFactory.Verify<TInterface>, Throws.Exception.TypeOf<InvalidInterfaceException>());
         }
 
+        #if !NET35
         [Test]
         public void ShouldBeResolvableWithCastleWindsor()
         {
@@ -235,7 +239,8 @@ namespace Test.Fixtures
 
             container.Resolve<TInterface>();
         }
-
+        #endif
+        
         private TInterface CreateObject()
         {
             return CreateObjectForInterface<TInterface>();

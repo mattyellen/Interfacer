@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using Interfacer.Attributes;
 using Interfacer.Generators;
 
@@ -11,15 +12,20 @@ namespace Interfacer
     public class Generator
     {
         private readonly List<string> _referenceAssemblyDirectories = new List<string>();
+        private string _monikerName;
 
         public Generator WithTargetFramework(TargetFramework.Moniker moniker)
         {
-            _referenceAssemblyDirectories.AddRange(TargetFramework.GetReferenceAssemblyDirectories(moniker));
-            return this;
+            return WithTargetFramework(TargetFramework.GetMonikerName(moniker));
         }
 
 		public Generator WithTargetFramework(string monikerName)
-        {
+		{
+		    if (_monikerName != null)
+		    {
+                throw new InvalidOperationException($"Target framework is has already been set to: {_monikerName}");
+		    }
+		    _monikerName = monikerName;
             _referenceAssemblyDirectories.AddRange(TargetFramework.GetReferenceAssemblyDirectories(monikerName));
             return this;
         }
@@ -55,15 +61,30 @@ namespace Interfacer
         {
             InterfacerFactory.VerifyInterfaceType(interfacerType);
 
-            var attribute = InterfacerFactory.GetInterfacerAttribute(interfacerType);
+            var generatedCode = new StringBuilder();
+            if (_monikerName != null)
+            {
+                generatedCode.AppendLine($"#if {TargetFramework.GetMonikerPreprocessorSymbol(_monikerName)}");
+			}
+
+			var attribute = InterfacerFactory.GetInterfacerAttribute(interfacerType);
             var targetClass = LoadClass(attribute.Class);
             if (attribute is ApplyToInstanceAttribute)
             {
                 var generator = new InstanceGenerator(interfacerType, targetClass);
-                return generator.GetInterface();
+                generatedCode.Append(generator.GetInterface());
+            }
+            else
+            {
+                throw new NotImplementedException();
             }
 
-            throw new NotImplementedException();
+            if (_monikerName != null)
+            {
+                generatedCode.AppendLine("#endif");
+            }
+
+            return generatedCode.ToString();
         }
 
         private Type LoadClass(Type @class)

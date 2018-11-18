@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net461;netcoreapp2.1</TargetFrameworks>
+    <TargetFrameworks>net461;netcoreapp2.1;net35</TargetFrameworks>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Interfacer\Interfacer.csproj" />
@@ -11,7 +11,8 @@
     <Folder Include="Generated" />
     <Folder Include="Generated\" />
   </ItemGroup>
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(TargetFramework)'=='net461'">
-    <Exec Command="$(TargetPath) $(ProjectDir)\Generated\AutomaticInterfaces.Generated.cs" />
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="$(TargetPath) $(TargetFramework) $(ProjectDir)\Generated\AutomaticInterfaces.$(TargetFramework).cs" Condition="'$(TargetFramework)'!='netcoreapp2.1'" />
+    <Exec Command="dotnet $(TargetPath) $(TargetFramework) $(ProjectDir)\Generated\AutomaticInterfaces.$(TargetFramework).cs" Condition="'$(TargetFramework)'=='netcoreapp2.1'" />
   </Target>
 </Project>

@@ -1,6 +1,6 @@
 ﻿using Interfacer.Attributes;
 using NUnit.Framework;
-using Test.TestClasses;
+using TestClasses;
 
 namespace Test.Fixtures
 {

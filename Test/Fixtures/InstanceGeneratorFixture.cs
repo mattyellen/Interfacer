@@ -34,7 +34,7 @@ namespace Test.Fixtures
             var pt = Type.GetType("Microsoft.Win32.SafeHandles.SafeProcessHandle");
 
             var assembly = typeof(Program).Assembly;
-            Debug.WriteLine(new Generator().WithTargetFramework(TargetFramework.Moniker.Net35).GenerateAll(assembly));
+            Debug.WriteLine(new Generator().WithTargetFramework(TargetFramework.Moniker.NetCoreApp2_0).GenerateAll(assembly));
         }
     }
 }

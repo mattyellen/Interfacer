@@ -23,7 +23,6 @@ namespace Interfacer.Generators
 
         public string GetInterface()
         {
-            var csProv = new CSharpCodeProvider();
             var interfaceNamespace = new CodeNamespace(_targetInterface.Namespace);
 
             var name = _targetInterface.Name;
@@ -45,7 +44,7 @@ namespace Interfacer.Generators
                 var interfaceProperty = new CodeMemberProperty()
                 {
                     Name = propertyInfo.Name,
-                    Type = new CodeTypeReference(propertyInfo.PropertyType),
+                    Type = new CodeTypeReference(propertyInfo.PropertyType.FullName ?? propertyInfo.PropertyType.Name),
                     HasGet = propertyInfo.GetGetMethod() != null,
                     HasSet = propertyInfo.GetSetMethod() != null                    
                 };
@@ -88,6 +87,7 @@ namespace Interfacer.Generators
             interfaceNamespace.Types.Add(generatedInterface);
 
             var stringWriter = new StringWriter();
+            var csProv = new CSharpCodeProvider();
             csProv.GenerateCodeFromNamespace(interfaceNamespace, stringWriter, new CodeGeneratorOptions());
             return stringWriter.ToString();
         }

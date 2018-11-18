@@ -97,7 +97,7 @@ namespace TestClasses
             return vals.Sum();
         }
 
-        public void GetTripleValue(out int[] vals)
+		public void GetTripleValue(out int[] vals)
         {
             vals = new[] {Value, Value, Value};
         }
@@ -111,5 +111,5 @@ namespace TestClasses
         {
             return vals.Sum();
         }
-    }
+	}
 }

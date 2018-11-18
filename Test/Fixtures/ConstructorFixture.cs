@@ -3,7 +3,6 @@ using Interfacer;
 using Interfacer.Attributes;
 using Interfacer.Exceptions;
 using NUnit.Framework;
-using Test.TestClasses;
 using TestClasses;
 
 namespace Test.Fixtures

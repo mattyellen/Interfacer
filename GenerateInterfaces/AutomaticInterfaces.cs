@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using Interfacer.Attributes;
-using Test.TestClasses;
 using TestClasses;
 
 namespace GenerateInterfaces

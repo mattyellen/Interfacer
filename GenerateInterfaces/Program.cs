@@ -7,8 +7,12 @@ namespace GenerateInterfaces
     {
         static void Main(string[] args)
         {
-	        //var code = new Generator("v3.5").GenerateAll<IAutogenerate>();
-         //   File.WriteAllText(args[0], code);
+            var moniker = args[0];
+            var file = args[1];
+
+            var assembly = typeof(IAutogenerate).Assembly;
+	        var code = new Generator().WithTargetFramework(moniker).GenerateAll(assembly);
+            File.WriteAllText(file, code);
         }
     }
 }

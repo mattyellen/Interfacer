@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Test.TestClasses
+﻿namespace TestClasses
 {
     public class TestObjectWithGenericTypes<T1, T2>
     {

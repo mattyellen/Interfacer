@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using Castle.Core.Resource;
 
 namespace Interfacer
 {
@@ -18,40 +14,45 @@ namespace Interfacer
                                                       @"C:\Program Files (x86)";
 
 
-	    private static Dictionary<string, List<string>> _referenceAssemblyDirectories;
+	    private static readonly Dictionary<string, List<string>> ReferenceAssemblyDirectories;
 
-	    public static List<string> GetReferenceAssemblyDirectories(Moniker moniker)
+	    internal static List<string> GetReferenceAssemblyDirectories(string moniker)
 	    {
-		    return _referenceAssemblyDirectories[GetMonikerName(moniker)];
-	    }
-
-	    public static List<string> GetReferenceAssemblyDirectories(string moniker)
-	    {
-		    if (!_referenceAssemblyDirectories.ContainsKey(moniker))
+		    if (!ReferenceAssemblyDirectories.ContainsKey(moniker))
 		    {
 			    throw new InvalidMoniker(moniker);
 		    }
 
-		    return _referenceAssemblyDirectories[moniker];
+		    return ReferenceAssemblyDirectories[moniker];
+	    }
+
+	    internal static string GetMonikerName(Moniker moniker)
+	    {
+		    return moniker.ToString().ToLower().Replace("_", ".");
+	    }
+
+	    internal static string GetMonikerPreprocessorSymbol(string monikerName)
+	    {
+		    return monikerName.ToUpper().Replace(".", "_");
 	    }
 
 		static TargetFramework()
 	    {
 
 #if NETSTANDARD2_0
-	    var homePath = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-		    ? Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%")
-		    : Environment.GetEnvironmentVariable("HOME");
+			var homePath = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+				? Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%")
+				: Environment.GetEnvironmentVariable("HOME");
 
-			_referenceAssemblyDirectories = GetCoreReferenceAssemblies(homePath);
+			ReferenceAssemblyDirectories = GetCoreReferenceAssemblies(homePath);
 #else
 		    var frameworkAssemblies = GetFrameworkReferenceAssemblies();
 
-		    var homePath = Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%");
-		    var coreAssemblies = GetCoreReferenceAssemblies(homePath);
+			var homePath = Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%");
+			var coreAssemblies = GetCoreReferenceAssemblies(homePath);
 
-			_referenceAssemblyDirectories = frameworkAssemblies.Concat(coreAssemblies)
-			    .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+			ReferenceAssemblyDirectories = frameworkAssemblies.Concat(coreAssemblies)
+				.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 #endif
 
 		}
@@ -97,10 +98,10 @@ namespace Interfacer
 
 	    public enum Moniker
 	    {
-		    NetStandard2_0,
-		    NetCoreApp2_0,
-		    NetCoreApp2_1,
-		    Net11,
+			NetStandard2_0,
+			NetCoreApp2_0,
+			NetCoreApp2_1,
+			Net11,
 		    Net20,
 		    Net30,
 		    Net35,
@@ -145,6 +146,14 @@ namespace Interfacer
 	    private static List<string> GetCoreRefPaths(string homePath, string package, Moniker moniker,
 		    string relativeDirTemplate)
 	    {
+			return new List<string>();
+	    }
+
+		/* TODO: Add support for loading reference assembly info on .NET Core
+		 * ReflectionOnlyLoadFrom is not supported.
+		private static List<string> GetCoreRefPaths(string homePath, string package, Moniker moniker,
+		    string relativeDirTemplate)
+	    {
 		    var packageDir = PathCombine(homePath, ".nuget", "packages", package);
 		    var versions = new DirectoryInfo(packageDir).GetDirectories().Select(di => di.Name).Reverse();
 
@@ -155,11 +164,7 @@ namespace Interfacer
 			    where Directory.Exists(p)
 			    select p).ToList();
 	    }
-
-	    private static string GetMonikerName(Moniker moniker)
-	    {
-		    return moniker.ToString().ToLower().Replace("_", ".");
-	    }
+		*/
 
 	    private static string PathCombine(string root, params string[] paths)
 	    {
